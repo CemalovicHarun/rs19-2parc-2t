@@ -140,6 +140,33 @@ public class GlavnaController {
             listGradovi.setAll(dao.gradovi());
         }
     }
+    public void actionIzmijeniDrzavu(ActionEvent actionEvent) {
+        Grad grad = tableViewGradovi.getSelectionModel().getSelectedItem();
+        if (grad == null) return;
+
+        Stage stage = new Stage();
+        Parent root = null;
+        try {
+            FXMLLoader loader = new FXMLLoader(getClass().getResource("/fxml/drzava.fxml"));
+            DrzavaController drzavaController = new DrzavaController(grad.getDrzava(), dao.gradovi());
+            loader.setController(drzavaController);
+            root = loader.load();
+            stage.setTitle("Država");
+            stage.setScene(new Scene(root, USE_COMPUTED_SIZE, USE_COMPUTED_SIZE));
+            stage.setResizable(true);
+            stage.show();
+
+            stage.setOnHiding( event -> {
+                Drzava drzava = drzavaController.getDrzava();
+                if (drzava != null) {
+                    dao.izmijeniDrzavu(drzava);
+                    listGradovi.setAll(dao.gradovi());
+                }
+            } );
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     // Metoda za potrebe testova, vraća bazu u polazno stanje
     public void resetujBazu() {
